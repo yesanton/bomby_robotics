@@ -4,6 +4,8 @@ import os
 import datetime
 import time
 from Display import Display
+from Sound import Sound
+
 
 #This is status of the game
 #0 - initialized
@@ -11,24 +13,28 @@ from Display import Display
 #2 - word guessed - switch words
 #4 - game finished
 
-EXTERNAL_STATUS = 0
-
+class Status:
+	status = 0
+	
 
 class GameEngine:
 	display = Display()
+	sound = Sound()
+	EXTERNAL_STATUS = Status()
 	def playGame(self):
 		pressed = 0
-		EXTERNAL_STATUS = 0
-		self.display.display(EXTERNAL_STATUS)
+		self.EXTERNAL_STATUS.status = 0
+		self.display.display(self.EXTERNAL_STATUS)
 		while(1):
 			if(self.display.button_status()):	
 				pressed = 1
 			if(pressed == 1):
 				pressed = 0
-				EXTERNAL_STATUS = 2
-				self.display.display(EXTERNAL_STATUS)		
-			if(EXTERNAL_STATUS == 4):
-				self.display.display(EXTERNAL_STATUS)				
+				self.EXTERNAL_STATUS.status = 2
+				self.display.display(self.EXTERNAL_STATUS)		
+				print self.EXTERNAL_STATUS.status
+			if(self.EXTERNAL_STATUS.status == 4):
+				self.display.display(self.EXTERNAL_STATUS)				
 
 
 

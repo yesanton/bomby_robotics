@@ -35,6 +35,7 @@ class Display:
 			self.showWord(word)
 		elif (status == 3):
 			self.showWord(PH_GAME_FINISHED)
+		status.status = 34
 	def button_status(self):
 		return lcd.is_pressed(LCD.SELECT)
 
