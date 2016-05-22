@@ -17,6 +17,8 @@ class Sound:
     	    sleep(septime)
     		
 	def PlayTick(self,filename=r"metal.wav"):
+            if self.gstatus.status!=1:
+                    return                
 	    #open a wav format music
 	    f = wave.open(filename,"rb")
 	    #instantiate PyAudio
@@ -41,8 +43,6 @@ class Sound:
 	    p.terminate()
 	    
 	def PlayTick2(self,filename=r"metal.wav"):
-            if self.gstatus.status!=1:
-                    return
 	    #open a wav format music
 	    f = wave.open(filename,"rb")
 	    #instantiate PyAudio
@@ -68,8 +68,12 @@ class Sound:
 	def PlayTickTimeStop(self, max=30):
             wordcount=self.gstatus.wordscounter
 	    for i in range(max):
+                    
+                #Casse when a word guessed
                 if self.gstatus.wordscounter>wordcount:
                         return
+                
+                #Case when a software closing 
                 if self.gstatus.status==3:
                         return
 	        self.PlayTickSleep(1-i/float(max))
@@ -86,6 +90,8 @@ class Sound:
                 if self.gstatus.status==1:
                     print('let the show begin')
                     self.PlayTickTimeStop(random.randint(random_min,random_max))
+                #When status is 2 the sound thread will be on hold waiting for
+                # word
 
 	
 #s = Sound()

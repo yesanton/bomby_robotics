@@ -4,65 +4,76 @@
 import pyaudio
 import wave
 import speech_recognition as sr
-from time import time
+from time import time,sleep
 from threading import Thread
+from Queue import Queue
+import copy
+class AudioListener():
+    def __init__(self,status):
+        self.r = sr.Recognizer()
+        self.gstatus = status
+        self.que = Queue()
+    def listen(self):
+        with sr.Microphone() as source:
+            print("Say something!")
+            audio = self.r.record(source,2)
+        return audio
+    def AudioListenerOperator(self):
+        print 'Listener Started'
+        #initialize the first entry
+        a1=sr.AudioData('',1,1)
+        while self.gstatus.status!=3:
+            #never start recording before the game begin
+            if self.gstatus.status!=1:
+                sleep(0.5)
+                continue
+            a2 = self.listen()
+            audio = sr.AudioData(a1.frame_data+a2.frame_data,a2.sample_rate,a2.sample_width)
+            self.que.put(a2)
+            self.que.put(audio)
+            a1 = a2
+        print 'Listener Thread Ended\n'
+    #get words from the audio
+    def AudioInterpreter(self):
+        while 1:#self.gstatus==1:
+            if self.gstatus.status==3:
+                break
+            if self.que.empty():
+                print '=================EMPTY======================'
+                sleep(0.5)
+                continue
+            try:
+                
+                #In case game exploded or closing 
+                if self.gstatus.status!=1:
+                    self.que.queue.clear()
+                    continue
+                print '==================Getting Text================'
+                audio = self.que.get()
+                # for testing purposes, we're just using the default API key
+                # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
+                # instead of `r.recognize_google(audio)`
+                gwords = self.r.recognize_google(audio)
+                if self.gstatus.currentword in gwords.split(' '):
+                    self.gstatus.changeword=True
+                    self.que.queue.clear()
+                
+                print("Google Speech Recognition thinks you said " + gwords)
+            except sr.UnknownValueError:
+                print("Google Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
-def ReadAndInterpret():
-    # obtain audio from the microphone
-    r = sr.Recognizer()
-    t = time()
-    with sr.Microphone() as source:
-        print("Say something!")
-        audio1 = r.record(source,2)
-    print('second sentence')
-    with sr.Microphone() as source:
-        print("Say something!")
-        audio2 = r.record(source,2)
+            # recognize speech using Wit.ai
+            WIT_AI_KEY ="RHGDIA7UYYCVUILELWSVOEJAR2C64JJE"# "INSERT WIT.AI API KEY HERE" # Wit.ai keys are 32-character uppercase alphanumeric strings
+            try:
+                witwords = self.r.recognize_wit(audio, key=WIT_AI_KEY)
+                print("Wit.ai thinks you said " + witwords)
+            except sr.UnknownValueError:
+                print("Wit.ai could not understand audio")
+            except sr.RequestError as e:
+                print("Could not request results from Wit.ai service; {0}".format(e))
+        print 'Interpreter Thread Ended\n'
         
-    with open('audio1.flac','wb') as f:
-        f.write(audio1.get_flac_data())
-    with open('audio2.flac','wb') as f:
-        f.write(audio2.get_flac_data())
-    audio = sr.AudioData(audio1.frame_data+audio2.frame_data,audio1.sample_rate,audio1.sample_width)
-    with open('audio.flac','wb') as f:
-        f.write(audio.get_flac_data())
 
-    return
 
-    print time()-t
-    print ("Stopped Listning")
-    print (audio.sample_width,len(audio.frame_data),audio.sample_rate)
-    '''
-    # recognize speech using Sphinx
-    try:
-        print("Sphinx thinks you said " + r.recognize_sphinx(audio))
-    except sr.UnknownValueError:
-        print("Sphinx could not understand audio")
-    except sr.RequestError as e:
-        print("Sphinx error; {0}".format(e))
-    '''
-    # recognize speech using Google Speech Recognition
-    try:
-        # for testing purposes, we're just using the default API key
-        # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-        # instead of `r.recognize_google(audio)`
-        print("Google Speech Recognition thinks you said " + r.recognize_google(audio))
-    except sr.UnknownValueError:
-        print("Google Speech Recognition could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results from Google Speech Recognition service; {0}".format(e))
-
-    # recognize speech using Wit.ai
-    WIT_AI_KEY ="RHGDIA7UYYCVUILELWSVOEJAR2C64JJE"# "INSERT WIT.AI API KEY HERE" # Wit.ai keys are 32-character uppercase alphanumeric strings
-    try:
-        print("Wit.ai thinks you said " + r.recognize_wit(audio, key=WIT_AI_KEY))
-    except sr.UnknownValueError:
-        print("Wit.ai could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results from Wit.ai service; {0}".format(e))
-
-ReadAndInterpret()
-#t1 = Thread(target = ReadAndInterpret)
-#t2 = Thread(target = ReadAndInterpret)
-#t1.start()
-#t2.start()
