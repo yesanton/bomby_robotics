@@ -16,9 +16,10 @@ lcd.clear()
 		
 
 class Display:
-	def __init__(self):	
+	def __init__(self,status):	
 		with open('words2.txt') as words:
 			self.lst =map(lambda x:x.strip(), words.readlines())
+		self.gstatus = status
 	def getWord(self):
 		return self.lst[random.randint(0,len(self.lst))]
 	
@@ -27,17 +28,30 @@ class Display:
 		lcd.clear()
 		lcd.message(word)
 	
-	def display(self, status):	
-		if (status == 0):
+	def display(self):
+                #game not started yet
+		if (self.gstatus.status == 0):
+                        #print('hello world')
 			self.showWord(PH_START_GAME)
-		elif (status == 2):
-			word = self.getWord()	 
-			self.showWord(word)
-		elif (status == 3):
+			
+		#game started
+		elif (self.gstatus.status == 1):
+                        
+                        #new word is requested
+                        if (self.gstatus.changeword):
+                                word = self.getWord()	 
+                                self.showWord(word)
+                                self.gstatus.currentword= word
+                                self.gstatus.wordupdated()
+                                
+                #Exploded
+		elif (self.gstatus.status == 2):
 			self.showWord(PH_GAME_FINISHED)
-		status.status = 34
+			
 	def button_status(self):
 		return lcd.is_pressed(LCD.SELECT)
+	def clear(self):
+                lcd.clear()
 
 #d = Display()
 #d.showWord(PH_GAME_FINISHED)
