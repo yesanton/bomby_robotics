@@ -41,7 +41,7 @@ class Display:
                         if (self.gstatus.changeword):
                                 word = self.getWord()	 
                                 self.showWord(word)
-                                self.gstatus.currentword= word
+                                self.gstatus.currentword= word.lower()
                                 self.gstatus.wordupdated()
                                 
                 #Exploded

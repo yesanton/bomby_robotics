@@ -54,11 +54,11 @@ class AudioListener():
                 # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
                 # instead of `r.recognize_google(audio)`
                 gwords = self.r.recognize_google(audio)
-                if self.gstatus.currentword in gwords.split(' '):
+                print '====GOOGLE:{}==='.format(gwords)
+                if self.gstatus.currentword in gwords.lower().split(' '):
+                    print '=================VICTORY==============='
                     self.gstatus.changeword=True
                     self.que.queue.clear()
-                
-                print("Google Speech Recognition thinks you said " + gwords)
             except sr.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
             except sr.RequestError as e:
@@ -68,6 +68,11 @@ class AudioListener():
             WIT_AI_KEY ="RHGDIA7UYYCVUILELWSVOEJAR2C64JJE"# "INSERT WIT.AI API KEY HERE" # Wit.ai keys are 32-character uppercase alphanumeric strings
             try:
                 witwords = self.r.recognize_wit(audio, key=WIT_AI_KEY)
+                print '====WIT:{}==='.format(witwords)
+                if self.gstatus.currentword in witwords.lower().split(' '):
+                    print '=================VICTORY==============='
+                    self.gstatus.changeword=True
+                    self.que.queue.clear()                
                 print("Wit.ai thinks you said " + witwords)
             except sr.UnknownValueError:
                 print("Wit.ai could not understand audio")
