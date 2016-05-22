@@ -1,20 +1,61 @@
 #!/usr/bin/env python3
 
 # NOTE: this example requires PyAudio because it uses the Microphone class
-
+import pyaudio
+import wave
 import speech_recognition as sr
 from time import time
 from threading import Thread
+
+def PlayTick(filename=r"project/metal.wav"):
+	    #open a wav format music
+	    f = wave.open(filename,"rb")
+	    #instantiate PyAudio
+	    p = pyaudio.PyAudio()
+	    #open stream
+	    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
+	                    channels = f.getnchannels(),
+	                    rate = f.getframerate(),
+	                    output = True)
+	    #read data
+	    data = f.readframes(1024)
+	    #paly stream
+	    while data != '':
+	        stream.write(data)
+	        data = f.readframes(1024)
+	
+	    #stop stream
+	    stream.stop_stream()
+	    stream.close()
+	
+	    #close PyAudio
+	    p.terminate()
+	
 def ReadAndInterpret():
     # obtain audio from the microphone
     r = sr.Recognizer()
     t = time()
     with sr.Microphone() as source:
         print("Say something!")
-        audio = r.record(source,3)
+        audio1 = r.record(source,2)
+    print('second sentence')
+    with sr.Microphone() as source:
+        print("Say something!")
+        audio2 = r.record(source,2)
+        
+    with open('audio1.flac','wb') as f:
+        f.write(audio1.get_flac_data())
+    with open('audio2.flac','wb') as f:
+        f.write(audio2.get_flac_data())
+    audio = sr.AudioData(audio1.frame_data+audio2.frame_data,audio1.sample_rate,audio1.sample_width)
+    with open('audio.flac','wb') as f:
+        f.write(audio.get_flac_data())
+
+    return
+
     print time()-t
     print ("Stopped Listning")
-    print (type(audio))
+    print (audio.sample_width,len(audio.frame_data),audio.sample_rate)
     '''
     # recognize speech using Sphinx
     try:
@@ -44,7 +85,8 @@ def ReadAndInterpret():
     except sr.RequestError as e:
         print("Could not request results from Wit.ai service; {0}".format(e))
 
-t1 = Thread(target = ReadAndInterpret)
+ReadAndInterpret()
+#t1 = Thread(target = ReadAndInterpret)
 #t2 = Thread(target = ReadAndInterpret)
-t1.start()
+#t1.start()
 #t2.start()
