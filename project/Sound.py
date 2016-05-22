@@ -5,7 +5,6 @@ import random
 
 #define stream chunk   
 chunk = 1024  
-
 #define random ranges
 random_min = 30
 random_max = 60
@@ -67,6 +66,8 @@ class Sound:
 	    p.terminate()
 	def PlayTickTimeStop(self, max=30):
             wordcount=self.gstatus.wordscounter
+            #Same amount of time that showing (Read,Get Set , Go) time.
+            sleep(1.2)
 	    for i in range(max):
                     
                 #Casse when a word guessed
@@ -77,8 +78,8 @@ class Sound:
                 if self.gstatus.status==3:
                         return
 	        self.PlayTickSleep(1-i/float(max))
+	    self.gstatus.status=2
             self.PlayTick2("thunder2.wav")
-            self.gstatus.status=2
 	def SoundOperator(self):
             while 1:
                 if self.gstatus.status==3:

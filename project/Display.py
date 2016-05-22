@@ -3,7 +3,7 @@ import random
 import os
 import datetime
 import time
-
+from time import sleep
 
 #few standard phrases 
 PH_START_GAME = "Shake to begin!"
@@ -39,10 +39,16 @@ class Display:
                         
                         #new word is requested
                         if (self.gstatus.changeword):
+                                self.gstatus.wordupdated()
+                                self.showWord('Ready')
+                                sleep(0.4)
+                                self.showWord('Get Set')
+                                sleep(0.4)
+                                self.showWord('Go')
+                                sleep(0.4)                                
                                 word = self.getWord()	 
                                 self.showWord(word)
                                 self.gstatus.currentword= word.lower()
-                                self.gstatus.wordupdated()
                                 
                 #Exploded
 		elif (self.gstatus.status == 2):

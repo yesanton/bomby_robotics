@@ -3,7 +3,7 @@ from Display import Display
 from time import sleep
 from Sound import Sound
 #from vr import AudioListener
-from vr_no_over_lap import AudioListener
+from vr_threads_recognition import AudioListener
 class Status(object):
     def __init__(self):
         #0- not started
@@ -46,21 +46,21 @@ def Displayfunction():
 displaythread = Thread(target=Displayfunction)
 soundthread= Thread(target=sound.SoundOperator)
 listnerthread= Thread(target=alistner.AudioListenerOperator)
-interpterthread= Thread(target=alistner.AudioInterpreter)
+#interpterthread= Thread(target=alistner.AudioInterpreter)
 def initialize():
     displaythread.start()
     soundthread.start()
     listnerthread.start()
-    interpterthread.start()
+    #interpterthread.start()
     sleep(2)#Replace with Shaking
     status.status=1
     status.changeword=True
     print '2'
-    sleep(50)
-    status.status=2
-    sleep(2)
-    status.status=3
-    disp.clear()
+    #sleep(50)
+    #status.status=2
+    #sleep(2)
+    #status.status=3
+    #disp.clear()
 
 def FinalInitialization():
     displaythread.start()
