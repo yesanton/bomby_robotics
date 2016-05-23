@@ -2,6 +2,7 @@ from threading import Thread
 from Display import Display
 from time import sleep
 from Sound import Sound
+from Shake import WaitShake
 #from vr import AudioListener
 from vr_threads_recognition import AudioListener
 class Status(object):
@@ -66,20 +67,23 @@ def FinalInitialization():
     displaythread.start()
     soundthread.start()
     listnerthread.start()
-    interpterthread.start()
+    #interpterthread.start()
     #Put with Shaking
+    WaitShake()
+    print 'Shaked'
     status.status=1
     status.changeword=True
     while 1:
         #Game Exploded
         if status.status==2:
             #Put Shaking Here
+            WaitShake()
             status.reset()
             status.status=1
             status.changeword=True
         #Every Second Will Check The game status
         sleep(1)
 try:
-    initialize()
+    FinalInitialization()
 except:
     status.status=3
